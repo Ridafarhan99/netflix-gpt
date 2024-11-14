@@ -5,12 +5,18 @@ import { auth } from "../utils/firebase";
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  updateProfile,
 } from "firebase/auth";
+import { useDispatch } from "react-redux";
+import { addUser } from "../utils/userSlice";
+import { USER_AVATAR } from "../utils/constants";
 
 const Login = () => {
   const [isSignInForm, setIsSignInForm] = useState(true);
   const [errorMessage, setErrorMessage] = useState(null);
+  const dispatch = useDispatch();
 
+  const name = useRef(null);
   const email = useRef(null);
   const password = useRef(null);
 
@@ -34,16 +40,36 @@ const Login = () => {
         .then((userCredential) => {
           // Signed up
           const user = userCredential.user;
+
+          updateProfile(user, {
+            displayName: name.current ? name.current.value : "",
+            photoURL: USER_AVATAR,
+          })
+            .then(() => {
+              // Profile updated!
+              const { uid, email, displayName, photoURL } = auth.currentUser;
+              // ...
+              dispatch(
+                addUser({
+                  uid: uid,
+                  email: email,
+                  displayName: displayName,
+                  photoURL: photoURL,
+                })
+              );
+            })
+            .catch((error) => {
+              setErrorMessage(error.message);
+            });
         })
         .catch((error) => {
           const errorCode = error.code;
-          const errorMessage = error.message;
           if (errorCode) {
             setErrorMessage("Something went wrong please try again!");
           }
-          // ..
         });
     } else {
+      // sign in logic
       signInWithEmailAndPassword(
         auth,
         email.current.value,
@@ -51,12 +77,10 @@ const Login = () => {
       )
         .then((userCredential) => {
           // Signed in
-          const user = userCredential.user;
         })
         .catch((error) => {
           const errorCode = error.code;
-
-          if (errorCode == "auth/invalid-credential") {
+          if (errorCode === "auth/invalid-credential") {
             setErrorMessage("Invalid email or password");
           }
         });
@@ -66,12 +90,12 @@ const Login = () => {
   return (
     <div>
       <Header />
-      <div className="absolute">
-        <img
-          src="https://assets.nflxext.com/ffe/siteui/vlv3/81d64f3c-9627-4741-8f74-422bf35f9f1d/web/IN-en-20241104-TRIFECTA-perspective_55263ea2-af7f-40ed-9cf0-7029a9b9baf4_large.jpg"
-          alt="background-image"
-        />
-      </div>
+      <div
+        className="fixed top-0 left-0 w-full h-full bg-cover bg-center -z-10"
+        style={{
+          backgroundImage: `url("https://assets.nflxext.com/ffe/siteui/vlv3/81d64f3c-9627-4741-8f74-422bf35f9f1d/web/IN-en-20241104-TRIFECTA-perspective_55263ea2-af7f-40ed-9cf0-7029a9b9baf4_large.jpg")`,
+        }}
+      ></div>
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -83,10 +107,10 @@ const Login = () => {
         </h1>
         {!isSignInForm ? (
           <input
+            ref={name}
             type="text"
             placeholder="Full Name"
             className="font-normal text-white p-2 my-2 w-full bg-gray-800 rounded-sm opacity-85"
-            required
           />
         ) : (
           ""

@@ -5,17 +5,24 @@ import VideoBackground from "./VideoBackground";
 
 function MainContainer() {
   const movies = useSelector((store) => store.movie?.nowPlayingMovies);
-  if (!movies) return;
+
+  if (!movies || movies.length === 0) {
+    return <div>No movies available.</div>; // Handle the case where there are no movies
+  }
 
   const mainMovie = movies[0];
-  console.log("main: ", mainMovie);
+  // console.log("main: ", mainMovie);
 
-  const { original_title, overview, id } = mainMovie;
+  // Ensure mainMovie has the necessary properties before destructuring
+  const { original_title, overview, id } = mainMovie || {};
 
   return (
     <div>
-      <VideoTitle title={original_title} overview={overview} />
-      <VideoBackground />
+      <VideoTitle
+        title={original_title || "Unknown Title"}
+        overview={overview || "No overview available."}
+      />
+      <VideoBackground movieID={id} />
     </div>
   );
 }

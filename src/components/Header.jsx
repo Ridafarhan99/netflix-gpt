@@ -53,8 +53,8 @@ const Header = () => {
   }, []);
 
   return (
-    <div className="absolute w-screen bg-gradient-to-b from-black z-10 flex justify-between">
-      <img className="w-48" src={LOGO} alt="netflix-logo" />
+    <div className="absolute w-full bg-gradient-to-b from-black z-10 flex justify-between">
+      <img className="w-48 mx-5" src={LOGO} alt="netflix-logo" />
 
       {user && (
         <button

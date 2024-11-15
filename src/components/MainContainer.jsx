@@ -11,7 +11,6 @@ function MainContainer() {
   }
 
   const mainMovie = movies[0];
-  // console.log("main: ", mainMovie);
 
   // Ensure mainMovie has the necessary properties before destructuring
   const { original_title, overview, id } = mainMovie || {};

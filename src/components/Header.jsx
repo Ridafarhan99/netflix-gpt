@@ -28,7 +28,6 @@ const Header = () => {
         // User is signed in, see docs for a list of available properties
         // https://firebase.google.com/docs/reference/js/auth.user
         const { uid, email, displayName, photoURL } = user;
-        // ...
         dispatch(
           addUser({
             uid: uid,
@@ -40,7 +39,6 @@ const Header = () => {
         navigate("/browse");
       } else {
         // User is signed out
-        // ...
         dispatch(removeUser());
         navigate("/");
       }
@@ -50,18 +48,29 @@ const Header = () => {
       // Cleanup
       unsubscribe();
     };
-  }, []);
+  }, [dispatch, navigate]);
 
   return (
-    <div className="absolute w-full bg-gradient-to-b from-black z-10 flex justify-between">
+    <div className="absolute w-full bg-gradient-to-b from-black z-20 flex justify-between items-center p-5">
       <img className="w-48 mx-5" src={LOGO} alt="netflix-logo" />
 
-      {user && (
+      {user ? (
+        <div className="flex items-center">
+          <span className="text-white mr-10 font-medium">Hi {user.email}</span>
+          <button
+            onClick={handleSignOut}
+            className="py-2 px-4 bg-red-700 rounded-sm font-medium"
+          >
+            Sign Out
+          </button>
+        </div>
+      ) : (
+        // If user is not logged in, no email is shown and Sign-In button could be added here
         <button
-          onClick={handleSignOut}
-          className="py-2 m-5 bg-red-700 w-20 rounded-sm font-medium"
+          onClick={() => navigate("/login")}
+          className="py-2 px-4 bg-blue-600 text-white rounded-sm font-medium"
         >
-          Sign Out
+          Sign In
         </button>
       )}
     </div>

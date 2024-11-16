@@ -6,10 +6,13 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   updateProfile,
+  GoogleAuthProvider,
+  signInWithPopup,
 } from "firebase/auth";
 import { useDispatch } from "react-redux";
 import { addUser } from "../utils/userSlice";
 import { USER_AVATAR } from "../utils/constants";
+import googleLogo from "../logo/7123025_logo_google_g_icon.png";
 
 const Login = () => {
   const [isSignInForm, setIsSignInForm] = useState(true);
@@ -29,16 +32,14 @@ const Login = () => {
     setErrorMessage(message);
     if (message) return;
 
-    // sign in and sign up logic
     if (!isSignInForm) {
-      // sign up logic
+      // Sign-Up Logic
       createUserWithEmailAndPassword(
         auth,
         email.current.value,
         password.current.value
       )
         .then((userCredential) => {
-          // Signed up
           const user = userCredential.user;
 
           updateProfile(user, {
@@ -46,9 +47,7 @@ const Login = () => {
             photoURL: USER_AVATAR,
           })
             .then(() => {
-              // Profile updated!
               const { uid, email, displayName, photoURL } = auth.currentUser;
-              // ...
               dispatch(
                 addUser({
                   uid: uid,
@@ -62,29 +61,44 @@ const Login = () => {
               setErrorMessage(error.message);
             });
         })
-        .catch((error) => {
-          const errorCode = error.code;
-          if (errorCode) {
-            setErrorMessage("Something went wrong please try again!");
-          }
+        .catch(() => {
+          setErrorMessage("Something went wrong, please try again!");
         });
     } else {
-      // sign in logic
+      // Sign-In Logic
       signInWithEmailAndPassword(
         auth,
         email.current.value,
         password.current.value
       )
-        .then((userCredential) => {
+        .then(() => {
           // Signed in
         })
-        .catch((error) => {
-          const errorCode = error.code;
-          if (errorCode === "auth/invalid-credential") {
-            setErrorMessage("Invalid email or password");
-          }
+        .catch(() => {
+          setErrorMessage("Invalid email or password");
         });
     }
+  };
+
+  const handleGoogleSignIn = () => {
+    const provider = new GoogleAuthProvider();
+
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        const { uid, email, displayName, photoURL } = result.user;
+
+        dispatch(
+          addUser({
+            uid: uid,
+            email: email,
+            displayName: displayName,
+            photoURL: photoURL,
+          })
+        );
+      })
+      .catch(() => {
+        setErrorMessage("Google Sign-In failed. Please try again.");
+      });
   };
 
   return (
@@ -105,15 +119,13 @@ const Login = () => {
         <h1 className="text-3xl py-4 font-bold text-white">
           {isSignInForm ? "Sign In" : "Sign Up"}
         </h1>
-        {!isSignInForm ? (
+        {!isSignInForm && (
           <input
             ref={name}
             type="text"
             placeholder="Full Name"
             className="font-normal text-white p-2 my-2 w-full bg-gray-800 rounded-sm opacity-85"
           />
-        ) : (
-          ""
         )}
 
         <input
@@ -138,6 +150,19 @@ const Login = () => {
         >
           {isSignInForm ? "Sign In" : "Sign Up"}
         </button>
+
+        <button
+          className="flex items-center justify-center py-2 my-4 bg-blue-600 w-full rounded-sm font-medium text-white"
+          onClick={handleGoogleSignIn}
+        >
+          <img
+            src={googleLogo}
+            alt="Google Logo"
+            className="w-6 h-6 mr-2" // Adjust the size and margin as needed
+          />
+          {isSignInForm ? "Sign In" : "Sign Up"} with Google
+        </button>
+
         <div
           className="pt-6 font-extralight cursor-pointer"
           onClick={toggleSignInForm}

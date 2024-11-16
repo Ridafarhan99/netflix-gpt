@@ -8,7 +8,7 @@ function VideoBackground({ movieID }) {
   useMovieTrailer(movieID);
 
   return (
-    <div className="z-0">
+    <div className="z-20">
       {trailerVideo?.key ? (
         <iframe
           className="w-full aspect-video"

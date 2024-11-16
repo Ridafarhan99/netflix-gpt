@@ -7,7 +7,7 @@ function VideoTitle({ title, overview }) {
       <p className="w-full md:w-1/4 mt-10">{overview}</p>
       <div className="mt-6">
         <button className="p-4 px-10 text-2xl hover:opacity-80 bg-white bg-opacity-50 text-black rounded-lg">
-          ▶ Play
+          ▶︎ Play
         </button>
         <button className="mx-4 p-4 px-10 text-2xl bg-gray-700 bg-opacity-50 text-white rounded-lg">
           ⓘ More Info

@@ -19,6 +19,8 @@ const MovieList = ({ title, movies }) => {
     });
   };
 
+  console.log("Array:", movieArray);
+
   return (
     <div className="relative mb-20">
       <h1 className="text-white text-3xl py-3">{title}</h1>
@@ -29,7 +31,12 @@ const MovieList = ({ title, movies }) => {
           className="flex overflow-x-scroll no-scrollbar"
         >
           {movieArray.map((movie) => (
-            <MovieCard key={movie.id} posterPath={movie.poster_path} />
+            <MovieCard
+              key={movie.id}
+              posterPath={movie.poster_path}
+              movieName={movie.title}
+              movieRating={movie.vote_average}
+            />
           ))}
         </div>
         {/* Buttons */}
